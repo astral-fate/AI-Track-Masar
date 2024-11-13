@@ -1,12 +1,26 @@
 # Complete Arabic ASR System Documentation
 
-## Project Overview
+
+## Table of Contents
+
+- [Project Overview](#project-overview)
+- [Environment Setup and Initial Configuration](#environment-setup-and-initial-configuration)
+- [Arabic Language Processing](#arabic-language-processing)
+- [Model Architecture](#model-architecture)
+- [Training Pipeline](#Training-Pipeline)
+- [Model Training](#model-training)
+- [Inference Pipeline](#Inference-Pipeline)
+
+
+
+
+# Project Overview
 This project implements an Automatic Speech Recognition (ASR) system for Arabic using the Wav2Vec2 architecture and Mozilla Common Voice dataset. The system is designed to provide accurate transcription of Arabic speech while handling the unique characteristics of the Arabic language.
 
-## Phase 1: Environment Setup and Initial Configuration
+# Environment Setup and Initial Configuration
 
 ### Overview
-The initial phase focused on establishing a robust development environment capable of handling the computational demands of ASR training and inference. This foundation was crucial for ensuring efficient development and training processes.
+The initial Step focused on establishing a robust development environment capable of handling the computational demands of ASR training and inference. This foundation was crucial for ensuring efficient development and training processes.
 
 ### Key Components
 - Development environment setup
@@ -50,7 +64,7 @@ if torch.cuda.is_available():
    - Set up dataset access
    - Establish storage systems
 
-## Phase 2: Arabic Language Processing Setup
+## Arabic Language Processing
 
 ### Overview
 Arabic language processing required careful consideration of the language's unique characteristics, including different letter forms, diacritics, and contextual variations. We implemented a comprehensive system to handle these complexities.
@@ -96,7 +110,7 @@ def initialize_tokenizer(vocab_path):
    - Set up tokenization
    - Configure special cases
 
-## Phase 3: Model Architecture and Configuration
+## Model Architecture
 
 ### Overview
 The model architecture was built on the facebook/wav2vec2-base foundation but required significant modifications for Arabic-specific requirements. This included adjusting the output layer and configuring the CTC head for Arabic text generation.
@@ -143,7 +157,7 @@ class ASRModelConfiguration:
    - Configure training parameters
    - Set up CTC head
 
-## Phase 4: Training Pipeline Development
+# Training Pipeline
 
 ### Overview
 The training pipeline was designed to efficiently process audio data, handle Arabic text, and manage the training process effectively. This included data loading, preprocessing, and batch management systems.
@@ -201,7 +215,7 @@ class TrainingPipeline:
    - Configure optimization
    - Setup monitoring
 
-## Phase 5: Model Training
+# Model Training
 
 ### Overview
 The training process involved careful monitoring of model performance, regular evaluation, and optimization of training parameters. We implemented comprehensive logging and checkpointing systems to ensure training stability.
@@ -262,7 +276,7 @@ def compute_metrics(self, pred):
    - Calculate WER
    - Monitor resource usage
 
-## Phase 6: Inference Pipeline
+# Inference Pipeline
 
 ### Overview
 The inference pipeline was optimized for efficient transcription of Arabic speech, including proper handling of audio input and text output processing.
