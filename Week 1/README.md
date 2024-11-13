@@ -321,3 +321,85 @@ class InferencePipeline:
    - Configure processing
    - Setup output handling
 
+## Example
+
+
+
+## Tokenization and Analysis
+
+### Tokenization Process
+The ASR system implements Wav2Vec2CTCTokenizer for Arabic speech recognition. The tokenizer uses a 41-token vocabulary structured as:
+
+```python
+vocab_dict = {
+    "<pad>": 0, "<s>": 1, "</s>": 2, "<unk>": 3,
+    "ا": 4, "ب": 5, ..., "ى": 39, " ": 40
+}
+```
+
+Audio processing pipeline configuration:
+```python
+feature_extractor = Wav2Vec2FeatureExtractor(
+    feature_size=1,
+    sampling_rate=16000,
+    padding_value=0.0,
+    do_normalize=True,
+    return_attention_mask=True
+)
+```
+
+### Probability Analysis
+Token probabilities are computed using softmax over logits:
+
+```python
+# Get probabilities for first 10 tokens
+probs = torch.nn.functional.softmax(logits[0, :10], dim=-1)
+values, indices = torch.topk(probs, k=5, dim=-1)
+
+# Example output format:
+# Position 0:
+#   ا: 0.8234
+#   ب: 0.1123
+#   ت: 0.0432
+#   ...
+```
+
+### Waveform Processing
+Audio preprocessing includes normalization and visualization:
+
+```python
+# Load and normalize audio
+waveform, sr = librosa.load(audio_path, sr=16000)
+waveform = librosa.util.normalize(waveform)
+
+# Audio characteristics
+duration = len(waveform) / sr  # Typical range: 5-30 seconds
+amplitude_range = [waveform.min(), waveform.max()]  # Normalized to [-1, 1]
+```
+![download](https://github.com/user-attachments/assets/bcc99ea5-a088-4d33-a1b2-35ce79acf3ad)
+
+### Technical Specifications
+- Input shape: `[1, sequence_length]` (varies with audio duration)
+- Logits shape: `[1, sequence_length, 41]` (41 = vocabulary size)
+- Model parameters: ~95M
+- Processing pipeline:
+  ```
+  Audio → Feature Extraction → CTC Tokenization → Logits → Probabilities → Text
+  ```
+
+### Debug Information Sample
+```python
+# Token probability example from test run
+Position 0:
+  "ا": 0.8234  # High confidence for initial alif
+  "أ": 0.1123  # Alternative alif form
+  " ": 0.0432  # Space character
+  "<unk>": 0.0211
+  ...
+```
+
+The system provides detailed logging at each processing stage for monitoring and debugging purposes.
+
+
+
+
