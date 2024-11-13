@@ -398,7 +398,7 @@ Position 0:
   ...
 ```
 
-The system provides detailed logging at each processing stage for monitoring and debugging purposes.
+The model provides detailed logging at each processing stage for monitoring and debugging purposes.
 
 
 
