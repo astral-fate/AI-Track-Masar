@@ -321,7 +321,3 @@ class InferencePipeline:
    - Configure processing
    - Setup output handling
 
-2. **Optimization**
-   - Batch processing
-   - Memory management
-   - Error handling
