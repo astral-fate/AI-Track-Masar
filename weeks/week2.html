@@ -1,0 +1,2103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MASAR AI - Week 2: Large Language Models</title>
+<style>
+    /* ==================== GENERAL STYLES ==================== */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+        color: #333;
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        overflow: hidden;
+    }
+    
+    /* ==================== HEADER WITH PROGRESS ==================== */
+    .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+        position: relative;
+    }
+    
+    .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .header .subtitle {
+        font-size: 1.1em;
+        opacity: 0.9;
+    }
+    
+    .progress-container {
+        margin-top: 20px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 10px;
+        height: 30px;
+        overflow: hidden;
+    }
+    
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #48c6ef 0%, #6f86d6 100%);
+        width: 0%;
+        transition: width 0.5s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 0.9em;
+    }
+    
+    /* ==================== GAMIFICATION STATS ==================== */
+    .stats-bar {
+        display: flex;
+        justify-content: space-around;
+        padding: 20px;
+        background: #f8f9fa;
+        border-bottom: 3px solid #e9ecef;
+    }
+    
+    .stat-item {
+        text-align: center;
+        padding: 10px 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        min-width: 120px;
+    }
+    
+    .stat-item .stat-icon {
+        font-size: 2em;
+        margin-bottom: 5px;
+    }
+    
+    .stat-item .stat-label {
+        font-size: 0.85em;
+        color: #6c757d;
+        font-weight: 600;
+    }
+    
+    .stat-item .stat-value {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #667eea;
+    }
+    
+    /* ==================== NAVIGATION TABS ==================== */
+    .nav-tabs {
+        display: flex;
+        overflow-x: auto;
+        background: #f8f9fa;
+        border-bottom: 3px solid #dee2e6;
+        padding: 0 10px;
+    }
+    
+    .nav-tabs::-webkit-scrollbar {
+        height: 6px;
+    }
+    
+    .nav-tabs::-webkit-scrollbar-thumb {
+        background: #667eea;
+        border-radius: 3px;
+    }
+    
+    .tab-btn {
+        padding: 15px 25px;
+        border: none;
+        background: none;
+        color: #495057;
+        font-weight: 600;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        position: relative;
+    }
+    
+    .tab-btn:hover {
+        background: rgba(102, 126, 234, 0.1);
+        color: #667eea;
+    }
+    
+    .tab-btn.active {
+        color: #667eea;
+        border-bottom-color: #667eea;
+        background: white;
+    }
+    
+    .tab-btn .badge {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: #28a745;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 0.7em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* ==================== CONTENT SECTIONS ==================== */
+    .content-section {
+        display: none;
+        padding: 30px;
+        animation: fadeInUp 0.5s ease;
+    }
+    
+    .content-section.active {
+        display: block;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    h2 {
+        color: #667eea;
+        margin-bottom: 20px;
+        font-size: 2em;
+        border-bottom: 3px solid #667eea;
+        padding-bottom: 10px;
+    }
+    
+    h3 {
+        color: #764ba2;
+        margin-top: 25px;
+        margin-bottom: 15px;
+        font-size: 1.5em;
+    }
+
+    h4 {
+        color: #667eea;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        font-size: 1.2em;
+    }
+    
+    /* ==================== GLOSSARY ACCORDION ==================== */
+    .glossary-accordion {
+        margin: 20px 0;
+    }
+    
+    .accordion-item {
+        margin-bottom: 10px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .accordion-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 20px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .accordion-header:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+    
+    .accordion-header .icon {
+        transition: transform 0.3s ease;
+    }
+    
+    .accordion-header.active .icon {
+        transform: rotate(180deg);
+    }
+    
+    .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        background: white;
+    }
+    
+    .accordion-content.active {
+        max-height: 500px; /* Increased max-height for potentially longer content */
+    }
+    
+    .accordion-content p, .accordion-content ul {
+        padding: 20px;
+        line-height: 1.6;
+    }
+    
+    /* ==================== INFO CARDS ==================== */
+    .info-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin: 20px 0;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-left: 5px solid #667eea;
+    }
+    
+    .info-card.warning {
+        border-left-color: #ffc107;
+        background: #fff9e6;
+    }
+    
+    .info-card.success {
+        border-left-color: #28a745;
+        background: #e8f5e9;
+    }
+    
+    .info-card.danger {
+        border-left-color: #dc3545;
+        background: #ffebee;
+    }
+    
+    .info-card.info {
+        border-left-color: #17a2b8;
+        background: #e3f2fd;
+    }
+    
+    /* ==================== COMPARISON GRID ==================== */
+    .comparison-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin: 25px 0;
+    }
+    
+    .comparison-box {
+        padding: 25px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .comparison-box:hover {
+        transform: translateY(-5px);
+    }
+    
+    .comparison-box.blue {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .comparison-box.green {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+    }
+    
+    .comparison-box .icon {
+        font-size: 3em;
+        margin-bottom: 15px;
+    }
+    
+    /* ==================== ANIMATED PROCESS FLOW ==================== */
+    .process-flow {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        margin: 30px 0;
+        flex-wrap: wrap;
+        position: relative;
+    }
+    
+    .flow-step {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 50%;
+        width: 150px;
+        height: 150px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-weight: bold;
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        animation: pulse 2s infinite;
+        position: relative;
+        margin: 10px;
+    }
+    
+    .flow-step .step-number {
+        font-size: 2em;
+        margin-bottom: 5px;
+    }
+    
+    .flow-step .step-label {
+        font-size: 0.9em;
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        50% {
+            transform: scale(1.05);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.5);
+        }
+    }
+    
+    .flow-step:nth-child(2) {
+        animation-delay: 0.5s;
+    }
+    
+    .flow-step:nth-child(3) {
+        animation-delay: 1s;
+    }
+    
+    .flow-step:nth-child(4) {
+        animation-delay: 1.5s;
+    }
+    
+    .flow-arrow {
+        font-size: 2.5em;
+        color: #667eea;
+        animation: arrowMove 1.5s infinite;
+    }
+    
+    @keyframes arrowMove {
+        0%, 100% { transform: translateX(0); }
+        50% { transform: translateX(10px); }
+    }
+    
+    /* ==================== REQUIREMENTS SPIRAL DIAGRAM ==================== */
+    .spiral-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 500px;
+        position: relative;
+        margin: 40px 0;
+    }
+    
+    .spiral-step {
+        position: absolute;
+        background: white;
+        border: 3px solid #667eea;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .spiral-step:hover {
+        transform: scale(1.1);
+        z-index: 10;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+    
+    .spiral-step h4 {
+        color: #667eea;
+        margin-bottom: 10px;
+    }
+    
+    /* ==================== INTERACTIVE EXAMPLES ==================== */
+    .example-container {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 25px;
+        margin: 25px 0;
+        border: 2px dashed #667eea;
+    }
+    
+    .example-title {
+        color: #667eea;
+        font-weight: bold;
+        font-size: 1.2em;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .requirement-item {
+        background: white;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+        transition: all 0.3s ease;
+    }
+    
+    .requirement-item:hover {
+        transform: translateX(10px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    /* ==================== METRICS TABLE ==================== */
+    .metrics-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 25px 0;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .metrics-table thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .metrics-table th,
+    .metrics-table td {
+        padding: 15px;
+        text-align: left;
+    }
+    
+    .metrics-table tbody tr {
+        border-bottom: 1px solid #e9ecef;
+        transition: background 0.3s ease;
+    }
+    
+    .metrics-table tbody tr:hover {
+        background: rgba(102, 126, 234, 0.1);
+    }
+    
+    /* ==================== PROS/CONS LISTS ==================== */
+    .pros-cons-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin: 25px 0;
+    }
+    
+    .pros-box, .cons-box {
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .pros-box {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+    }
+    
+    .cons-box {
+        background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+        color: white;
+    }
+    
+    .pros-box h3, .cons-box h3 {
+        color: white;
+        margin-bottom: 15px;
+    }
+    
+    .pros-box ul, .cons-box ul {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .pros-box li, .cons-box li {
+        padding: 8px 0;
+        padding-left: 25px;
+        position: relative;
+    }
+    
+    .pros-box li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        font-weight: bold;
+        font-size: 1.2em;
+    }
+    
+    .cons-box li::before {
+        content: "✗";
+        position: absolute;
+        left: 0;
+        font-weight: bold;
+        font-size: 1.2em;
+    }
+    
+    /* ==================== QUIZ STYLES ==================== */
+    .quiz-container {
+        margin: 20px 0;
+    }
+    
+    .question-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin: 20px 0;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-left: 5px solid #667eea;
+    }
+    
+    .question-text {
+        font-size: 1.1em;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #333;
+    }
+    
+    .options-grid {
+        display: grid;
+        gap: 10px;
+    }
+    
+    .option-btn {
+        padding: 15px 20px;
+        border: 2px solid #e9ecef;
+        background: white;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: left;
+        font-size: 1em;
+    }
+    
+    .option-btn:hover {
+        border-color: #667eea;
+        background: rgba(102, 126, 234, 0.1);
+        transform: translateX(5px);
+    }
+    
+    .option-btn.selected {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+    
+    .option-btn.correct {
+        background: #28a745;
+        color: white;
+        border-color: #28a745;
+    }
+    
+    .option-btn.incorrect {
+        background: #dc3545;
+        color: white;
+        border-color: #dc3545;
+    }
+    
+    .check-btn {
+        margin-top: 15px;
+        padding: 12px 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .check-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .feedback {
+        margin-top: 15px;
+        padding: 15px;
+        border-radius: 10px;
+        font-weight: 600;
+        animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .feedback.correct {
+        background: #d4edda;
+        color: #155724;
+        border: 2px solid #28a745;
+    }
+    
+    .feedback.incorrect {
+        background: #f8d7da;
+        color: #721c24;
+        border: 2px solid #dc3545;
+    }
+    
+    /* ==================== TOOLTIPS ==================== */
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        cursor: help;
+        border-bottom: 2px dotted #667eea;
+        color: #667eea;
+        font-weight: 600;
+    }
+    
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 300px;
+        background-color: #555;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 10px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -150px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        font-size: 0.9em;
+        font-weight: normal;
+    }
+    
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
+    
+    /* ==================== INTERACTIVE BUTTONS ==================== */
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin: 20px 0;
+        flex-wrap: wrap;
+    }
+    
+    .action-btn {
+        padding: 12px 25px;
+        border-radius: 25px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .action-btn.primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .action-btn.secondary {
+        background: white;
+        color: #667eea;
+        border: 2px solid #667eea;
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    /* ==================== RESPONSIVE DESIGN ==================== */
+    @media (max-width: 768px) {
+        .header h1 {
+            font-size: 1.8em;
+        }
+        
+        .stats-bar {
+            flex-wrap: wrap;
+        }
+        
+        .comparison-container,
+        .pros-cons-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .process-flow {
+            flex-direction: column;
+        }
+        
+        .flow-arrow {
+            transform: rotate(90deg);
+            margin: 10px 0;
+        }
+        
+        .spiral-container {
+            min-height: 800px;
+        }
+    }
+    
+    /* ==================== LOADING ANIMATION ==================== */
+    .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(102, 126, 234, 0.3);
+        border-radius: 50%;
+        border-top-color: #667eea;
+        animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <!-- ==================== HEADER ==================== -->
+    <div class="header">
+        <h1>🚀 Week 2: Large Language Models (LLMs)</h1>
+        <p class="subtitle">From Core Concepts to Fine-Tuning and Prompting</p>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar">0% Complete</div>
+        </div>
+    </div>
+    
+    <!-- ==================== GAMIFICATION STATS ==================== -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-label">Points</div>
+            <div class="stat-value" id="points">0</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-icon">✅</div>
+            <div class="stat-label">Completed</div>
+            <div class="stat-value" id="completed">0/8</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-label">Accuracy</div>
+            <div class="stat-value" id="accuracy">0%</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-label">Streak</div>
+            <div class="stat-value" id="streak">0</div>
+        </div>
+    </div>
+    
+    <!-- ==================== NAVIGATION TABS ==================== -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" data-tab="recap">🤖 Recap & Architectures</button>
+        <button class="tab-btn" data-tab="intro-llm">🧠 Intro to LLMs</button>
+        <button class="tab-btn" data-tab="memory">💾 Memory Analysis</button>
+        <button class="tab-btn" data-tab="peft">🔧 PEFT</button>
+        <button class="tab-btn" data-tab="sampling">🎲 Sampling & Serving</button>
+        <button class="tab-btn" data-tab="icl">💡 In-Context Learning</button>
+        <button class="tab-btn" data-tab="evaluation">📊 Evaluation</button>
+        <button class="tab-btn" data-tab="practical">💻 Practical Session</button>
+        <button class="tab-btn" data-tab="glossary">📖 Glossary</button>
+        <button class="tab-btn" data-tab="quiz-fill">📝 Fill in the Blank</button>
+        <button class="tab-btn" data-tab="quiz-tf">❓ True/False</button>
+        <button class="tab-btn" data-tab="quiz-mc">🎲 Multiple Choice</button>
+    </div>
+    
+    <!-- ==================== SECTION 1: Recap & Architectures ==================== -->
+    <div class="content-section active" data-section="recap">
+        <h2>🤖 Recap & Core Architectures</h2>
+        
+        <div class="info-card">
+            <h3>Transformer Architecture Types</h3>
+            <p>From Week 1, we know the Transformer has an Encoder and a Decoder. Modern LLMs are built using one or more of these blocks.</p>
+            <div class="comparison-container">
+                <div class="comparison-box" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333;">
+                    <div class="icon">🔄</div>
+                    <h3>Encoder-Decoder</h3>
+                    <p>Supports multi-modality and multi-domain tasks (e.g., T5, BART).</p>
+                </div>
+                <div class="comparison-box" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #333;">
+                    <div class="icon">➡️</div>
+                    <h3>Encoder Only</h3>
+                    <p>Enables bi-directional flow of information. Good for analysis tasks (e.g., BERT).</p>
+                </div>
+                <div class="comparison-box" style="background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); color: #333;">
+                    <div class="icon">➡️</div>
+                    <h3>Decoder Only</h3>
+                    <p>Designed for unidirectional, causal flow. Good for generation tasks (e.g., GPT, Llama). <strong>Most modern LLMs use this.</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <h3>Anatomy of a Decoder-Only Model</h3>
+        <div class="info-card info">
+            <p>A decoder-only model is a stack of Transformer Decoder Layers. Each layer contains two main sub-layers:</p>
+            <ol>
+                <li><strong>Masked Multi-Head Attention:</strong> Allows a token to look at and gather context from *only* the tokens that came before it (and itself). This is what makes it "causal."</li>
+                <li><strong>Feed Forward Module:</strong> A simple neural network that processes each token's representation independently.</li>
+            </ol>
+            <p>These layers are wrapped with Add & Norm (Residual Connections and Layer Normalization) to help with training stability.</p>
+        </div>
+
+        <h3>Key Architectural Evolutions (GPT vs. Llama)</h3>
+        <div class="comparison-container">
+            <div class="comparison-box blue">
+                <div class="icon">🤖</div>
+                <h3>GPT-2 / GPT-3 Style</h3>
+                <ul>
+                    <li><strong>Positional Encoding:</strong> Uses *learnable* positional encodings.</li>
+                    <li><strong>Normalization:</strong> Uses standard `LayerNorm` (shifted to the beginning of the layer).</li>
+                    <li><strong>Activation:</strong> Uses `GELU` (Gaussian Error Linear Unit).</li>
+                </ul>
+            </div>
+            <div class="comparison-box green">
+                <div class="icon">🦙</div>
+                <h3>Llama Style</h3>
+                <ul>
+                    <li><strong>Positional Encoding:</strong> Uses `RoPE` (Rotary Positional Encodings).</li>
+                    <li><strong>Normalization:</strong> Uses `RMSNorm` (Root Mean Square Norm), which is simpler and faster.</li>
+                    <li><strong>Activation:</strong> Uses `SwiGLU` (Switch Gated Linear Unit), which often performs better.</li>
+                    <li><strong>Attention:</strong> May use `GQA` (Grouped Query Attention) to speed up inference.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="action-btn primary" onclick="markSectionComplete('recap')">✓ Mark as Complete</button>
+            <button class="action-btn secondary" onclick="navigateToTab('intro-llm')">Next: Intro to LLMs →</button>
+        </div>
+    </div>
+    
+    <!-- ==================== SECTION 2: Intro to LLMs ==================== -->
+    <div class="content-section" data-section="intro-llm">
+        <h2>🧠 Introduction to Large Language Models (LLMs)</h2>
+        
+        <div class="info-card">
+            <h3>LLM Development Lifecycle</h3>
+            <p>Building an LLM is a multi-stage process:</p>
+            <div class="process-flow">
+                <div class="flow-step">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Data Collection & Cleaning</div>
+                </div>
+                <div class="flow-arrow">➡️</div>
+                <div class="flow-step">
+                    <div class="step-number">2</div>
+                    <div class="step-label">LLM Pre-training / Fine-tuning</div>
+                </div>
+                <div class="flow-arrow">➡️</div>
+                <div class="flow-step">
+                    <div class="step-number">3</div>
+                    <div class="step-label">LLM Evaluation</div>
+                </div>
+                <div class="flow-arrow">➡️</div>
+                <div class="flow-step">
+                    <div class="step-number">4</div>
+                    <div class="step-label">LLM Deployment</div>
+                </div>
+            </div>
+        </div>
+
+        <h3>The Three Scaling Axes</h3>
+        <div class="info-card info">
+            <p>Modern LLMs became "Large" by pushing three boundaries simultaneously:</p>
+            <ul>
+                <li><strong>Training Data:</strong> Using massive amounts of data. (e.g., Llama 3.1 405B was trained on over <strong>15 trillion tokens</strong>).</li>
+                <li><strong>Model Size (Parameters):</strong> Scaling the number of parameters by increasing layers, hidden size, attention heads, and context window.</li>
+                <li><strong>Compute Power:</strong> Access to huge clusters of GPUs. (e.g., Llama 3 405B was trained on up to <strong>16,000 H100 GPUs</strong>).</li>
+            </ul>
+        </div>
+
+        <h3>Pre-training vs. Fine-tuning</h3>
+        <div class="comparison-container">
+            <div class="comparison-box blue">
+                <div class="icon">📚</div>
+                <h3>Pre-training</h3>
+                <ul>
+                    <li><strong>Task:</strong> Broad understanding of language, context, and knowledge.</li>
+                    <li><strong>Weights:</strong> Randomly initialized.</li>
+                    <li><strong>Dataset:</strong> Huge, diverse (trillions of tokens).</li>
+                    <li><strong>Compute:</strong> Extremely intensive.</li>
+                    <li><strong>Example:</strong> Llama (Base Model)</li>
+                </ul>
+            </div>
+            <div class="comparison-box green">
+                <div class="icon">🎯</div>
+                <h3>Fine-tuning</h3>
+                <ul>
+                    <li><strong>Task:</strong> Focused task (e.g., follow instructions, summarize).</li>
+                    <li><strong>Weights:</strong> Loaded from a pre-trained model.</li>
+                    <li><strong>Dataset:</strong> Small, high-quality, specific.</li>
+                    <li><strong>Compute:</strong> Much less intensive.</li>
+                    <li><strong>Example:</strong> Llama Instruct (Chat Model)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="info-card warning">
+            <h3>Softmax with Temperature</h3>
+            <p>When an LLM predicts the next token, it outputs logits (raw scores), which are converted to probabilities by a `Softmax` function.</p>
+            <p>$p_{i} = \text{Softmax}(z_i) = \frac{\exp(z_i)}{\sum \exp(z_j)}$</p>
+            <p>We can control the "creativity" of the model using a <strong>Temperature ($T$)</strong> parameter, which divides the logits *before* the softmax:</p>
+            <p>$p_{i}(T) = \text{Softmax}(z_i / T) = \frac{\exp(z_i / T)}{\sum \exp(z_j / T)}$</p>
+            <ul>
+                <li><strong>Low $T$ ($T < 1$):</strong> Makes the model more confident and focused. Probabilities get sharper. Good for factual answers.</li>
+                <li><strong>High $T$ ($T > 1$):</strong> Makes the model more creative and random. Probabilities get more uniform. Good for story writing.</li>
+            </ul>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="action-btn primary" onclick="markSectionComplete('intro-llm')">✓ Mark as Complete</button>
+            <button class="action-btn secondary" onclick="navigateToTab('memory')">Next: Memory Analysis →</button>
+        </div>
+    </div>
+    
+    <!-- ==================== SECTION 3: Memory Analysis ==================== -->
+    <div class="content-section" data-section="memory">
+        <h2>💾 Memory Analysis</h2>
+        
+        <div class="info-card">
+            <h3>Understanding Data Types & Precision</h3>
+            <p>The memory a model uses depends on its parameters and the *precision* (data type) used to store them.</p>
+            <ul>
+                <li><strong>Float 32 (FP32):</strong> 32 bits = <strong>4 bytes</strong>. (Standard precision)</li>
+                <li><strong>Float 16 (FP16):</strong> 16 bits = <strong>2 bytes</strong>. (Half precision, uses less memory, faster)</li>
+                <li><strong>Int 8 (INT8):</strong> 8 bits = <strong>1 byte</strong>. (Quantized, even less memory)</li>
+            </ul>
+        </div>
+
+        <h3>Estimating Memory Requirements for INFERENCE</h3>
+        <div class="info-card info">
+            <p>To run a model (inference), you need to load its parameters into GPU VRAM.</p>
+            <p><strong>Rule of Thumb:</strong> `Memory (GB) ≈ Num. Parameters (Billions) * Precision (Bytes)`</p>
+            
+            <div class="example-container">
+                <div class="example-title">
+                    <span>💡</span>
+                    <span>Example: Llama-2 7B Model</span>
+                </div>
+                <ul style="list-style: none;">
+                    <li><strong>At FP32 (4 bytes):</strong> 7B * 4 bytes ≈ <strong>28 GB</strong></li>
+                    <li><strong>At FP16 (2 bytes):</strong> 7B * 2 bytes ≈ <strong>14 GB</strong></li>
+                    <li><strong>At 4-bit (0.5 bytes):</strong> 7B * 0.5 bytes ≈ <strong>3.5 GB</strong></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="info-card warning">
+            <h3>The Hidden Memory Hog: The KV Cache</h3>
+            <p>Just having 14GB for a 7B FP16 model isn't enough! When generating text, the model must store the <strong>Key (K)</strong> and <strong>Value (V)</strong> vectors for *every token in the context* so it doesn't have to recalculate them. This is the <strong>KV Cache</strong>.</p>
+            <p>The KV Cache size depends on:</p>
+            <ul>
+                <li>Batch Size (number of concurrent requests)</li>
+                <li>Sequence Length (how long the prompt + generation is)</li>
+                <li>Model Size (layers, hidden size)</li>
+            </ul>
+            <p><strong>KV Cache Memory ≈</strong> 2 * Batch Size * Seq. Length * Num. Layers * Hidden Size * Precision</p>
+            <p>This cache is why a model can use 14GB for its weights but still run out of memory on a 24GB card if the context is too long!</p>
+        </div>
+
+        <h3>Estimating Memory Requirements for TRAINING</h3>
+        <div class="info-card danger">
+            <p>Training requires *way* more memory than inference. For every model parameter, you need to store:</p>
+            <ol>
+                <li><strong>The Parameter itself</strong> (e.g., in FP32)</li>
+                <li><strong>The Gradient</strong> (how to update the parameter, same size)</li>
+                <li><strong>Optimizer States</strong> (e.g., Adam/AdamW optimizer stores *two* states, like momentum and variance, per parameter)</li>
+                <li><strong>Activations</strong> (Intermediate values needed for backpropagation)</li>
+            </ol>
+            <p><strong>Rule of Thumb (Mixed Precision Training):</strong></p>
+            <p>Using Adam optimizer, you need memory for:</p>
+            <ul>
+                <li>Model Weights (FP16): <strong>2 bytes/param</strong></li>
+                <li>Gradients (FP16): <strong>2 bytes/param</strong></li>
+                <li>Optimizer States (FP32): 2 states * 4 bytes = <strong>8 bytes/param</strong></li>
+                <li>(Plus activations, which vary)</li>
+            </ul>
+            <p><strong>Total (minimum):</strong> `(2+2+8) = 12 bytes/param`. For a 7B model: 7B * 12 ≈ <strong>84 GB VRAM!</strong></p>
+            <p>If you train in full FP32, it's `(4+4+8) = 16 bytes/param` (or 20 if gradients are also FP32). This is why full training is only possible on massive server-grade GPUs.</p>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="action-btn primary" onclick="markSectionComplete('memory')">✓ Mark as Complete</button>
+            <button class="action-btn secondary" onclick="navigateToTab('peft')">Next: PEFT →</button>
+        </div>
+    </div>
+
+    <!-- ==================== SECTION 4: PEFT ==================== -->
+    <div class="content-section" data-section="peft">
+        <h2>🔧 Parameter-Efficient Fine-Tuning (PEFT)</h2>
+        
+        <div class="info-card">
+            <h3>The Problem</h3>
+            <p>We just saw that fine-tuning a 7B model can take >84GB of VRAM. We can't do that on a consumer GPU. How can we "fine-tune" a model with less memory?</p>
+            <h3>The Solution: PEFT</h3>
+            <p><strong>Parameter-Efficient Fine-Tuning (PEFT)</strong> techniques aim to reduce the memory needed for fine-tuning by <strong>not training all the parameters</strong>. Instead, we "freeze" the original LLM weights and only train a small number of *new* parameters.</p>
+        </div>
+
+        <div class="info-card success">
+            <h3>LORA: Low-Rank Adaptation</h3>
+            <p>LORA is the most popular PEFT technique. It's based on one key insight:</p>
+            <p><strong>Insight:</strong> The "change" or "update" to the weights during fine-tuning (ΔW) is "low-rank." This means it can be represented by two much smaller matrices, <strong>A</strong> and <strong>B</strong>, where $W_{update} = B \cdot A$.</p>
+            
+            <h4>How LORA Works:</h4>
+            <ol>
+                <li><strong>Freeze the Original Model:</strong> All the original LLM weights (e.g., 7 billion parameters) are frozen. They will not be trained. This saves us from needing memory for gradients and optimizer states for them.</li>
+                <li><strong>Inject Adapters:</strong> For each Linear layer (which make up ~97% of a model), we add a small "adapter" on the side. This adapter consists of two small linear layers, $A$ and $B$.</li>
+                <li><strong>Train Only Adapters:</strong> We only train the weights of $A$ and $B$. This might only be a few *million* parameters, not billions.</li>
+            </ol>
+            <p><strong>During Training:</strong> The output of a LoRA layer is the sum of the original frozen layer's output and the new adapter's output: $Y = W \cdot X + (B \cdot A) \cdot X$</p>
+            <p><strong>Result:</strong> We can fine-tune a 7B model on a single consumer GPU, as we only need to store optimizer states and gradients for the tiny $A$ and $B$ matrices!</p>
+        </div>
+
+        <div class="info-card info">
+            <h3>QLORA: Quantized LORA</h3>
+            <p>QLORA takes this one step further to save even *more* memory.</p>
+            <p><strong>LORA Problem:</strong> You still have to load the original 7B parameters into VRAM (e.g., at FP16, that's 14GB). What if you only have an 8GB GPU?</p>
+            <p><strong>QLORA Solution:</strong></p>
+            <ol>
+                <li>Load the original, frozen model in <strong>4-bit precision</strong> (not FP16). This is called "quantization." (e.g., 7B * 0.5 bytes = 3.5GB).</li>
+                <li>Apply LORA adapters ($A$ and $B$) just like before.</li>
+                <li>Train *only* the LORA adapters (which are kept in higher precision, e.g., FP16).</li>
+            </ol>
+            <p>QLORA allows fine-tuning massive models (30B, 65B) on a single GPU by combining 4-bit quantization of the base model with the parameter-efficiency of LORA.</p>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="action-btn primary" onclick="markSectionComplete('peft')">✓ Mark as Complete</button>
+            <button class="action-btn secondary" onclick="navigateToTab('sampling')">Next: Sampling & Serving →</button>
+        </div>
+    </div>
+    
+    <!-- ==================== SECTION 5: Sampling & Serving ==================== -->
+    <div class="content-section" data-section="sampling">
+        <h2>🎲 Sampling & Serving</h2>
+        
+        <div class="info-card">
+            <h3>How Does an LLM "Choose" a Word?</h3>
+            <p>An LLM doesn't just pick one word. At each step, it outputs a probability distribution over *all possible tokens* in its vocabulary (e.g., 128,000 tokens). A <strong>sampling technique</strong> is an algorithm used to pick one token from this distribution.</p>
+        </div>
+
+        <h3>Common Sampling Techniques</h3>
+        <div class="comparison-container">
+            <div class="comparison-box blue">
+                <div class="icon">🏆</div>
+                <h3>Greedy Search</h3>
+                <p><strong>How it works:</strong> Always picks the single token with the highest probability.</p>
+                <p><strong>Result:</strong> Very fast, but boring, repetitive, and deterministic. Often gets stuck in loops.</p>
+            </div>
+            <div class="comparison-box green">
+                <div class="icon">🎲</div>
+                <h3>Top-K Sampling</h3>
+                <p><strong>How it works:</strong>
+                    1. Sorts all tokens by probability.
+                    2. Selects the top $K$ tokens (e.g., $K=50$).
+                    3. Throws away all other tokens.
+                    4. Performs a *weighted random sample* from only those $K$ tokens.
+                </p>
+                <p><strong>Result:</strong> More creative than greedy, but can be bad if the true next word isn't in the top $K$.</p>
+            </div>
+            <div class="comparison-box" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                <div class="icon">🎯</div>
+                <h3>Top-P (Nucleus) Sampling</h3>
+                <p><strong>How it works:</strong>
+                    1. Sorts all tokens by probability.
+                    2. Selects tokens from the top *until their cumulative probability sum reaches $P$* (e.g., $P=0.9$).
+                    3. Throws away all other tokens.
+                    4. Performs a *weighted random sample* from this "nucleus" of tokens.
+                </p>
+                <p><strong>Result:</strong> More dynamic. If the model is certain, it picks from a small set (like Top-K). If it's uncertain, it picks from a larger set. <strong>This is one of the most popular methods.</strong></p>
+            </div>
+        </div>
+
+        <h3>Serving & Controllable Generation</h3>
+        <div class="info-card info">
+            <h4>Serving with vLLM</h4>
+            <p><strong>Serving</strong> is the process of making a trained LLM available for users to send requests to (like an API). A popular serving engine is <strong>vLLM</strong>. It is very fast because it includes optimizations like <strong>PagedAttention</strong>, which manages the KV Cache memory much more efficiently (similar to how an OS manages RAM).</p>
+        </div>
+        <div class="info-card success">
+            <h4>Controllable Generation</h4>
+            <p>What if you want the model to *only* generate a valid JSON, or *only* a number, or *only* one of the words "positive" or "negative"?</p>
+            <p>This is <strong>Controllable Generation</strong> (or "Guided Generation"). At each sampling step, we *force* the sampler to only consider tokens that follow our desired format (e.g., a token that could be part of a number, or the specific tokens for "positive"). This is a powerful way to restrict the model's output to a strict structure.</p>
+        </div>
+
+        <div class="action-buttons">
+            <button class="action-btn primary" onclick="markSectionComplete('sampling')">✓ Mark as Complete</button>
+            <button class="action-btn secondary" onclick="navigateToTab('icl')">Next: In-Context Learning →</button>
+        </div>
+    </div>
+    
+    <!-- ==================== SECTION 6: ICL ==================== -->
+    <div class="content-section" data-section="icl">
+        <h2>💡 In-Context Learning (ICL)</h2>
+        
+        <div class="info-card">
+            <h3>What is In-Context Learning?</h3>
+            <p><strong>In-Context Learning (ICL)</strong> is the process of getting an LLM to learn a *new task at inference time* by simply providing instructions and examples in the prompt, *without updating any of the model's weights*.</p>
+            <p>This is useful for:</p>
+            <ul>
+                <li>Tasks with only a few examples.</li>
+                <li>Quickly prototyping and testing ideas.</li>
+                <li>Baseline benchmarking.</li>
+            </ul>
+        </div>
+
+        <h3>Types of ICL Prompting</h3>
+        <div class="comparison-container">
+            <div class="comparison-box" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333;">
+                <div class="icon">0️⃣</div>
+                <h3>Zero-Shot Learning</h3>
+                <p>Give the model *only* the task description and the new input. No examples are provided.</p>
+                <div class="example-container">
+                    <p><strong>Prompt:</strong></p>
+                    <p>"Classify the following text as either 'positive,' 'neutral,' or 'negative':</p>
+                    <p>'The product was satisfactory, but it didn't exceed my expectations.'"</p>
+                </div>
+            </div>
+            <div class="comparison-box" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #333;">
+                <div class="icon">1️⃣</div>
+                <h3>One-Shot Learning</h3>
+                <p>Give the model the task description, *one* example, and the new input.</p>
+                <div class="example-container">
+                    <p><strong>Prompt:</strong></p>
+                    <p>"Here is a sentence classified as 'urgent': 'Please respond to this email as soon as possible.'</p>
+                    <p>Now, classify this new sentence: 'I need you to call me back immediately.'"</p>
+                </div>
+            </div>
+            <div class="comparison-box" style="background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); color: #333;">
+                <div class="icon">🔢</div>
+                <h3>Few-Shot Learning</h3>
+                <p>Give the model the task description, *a few* examples (input/output pairs), and the new input.</p>
+                <div class="example-container">
+                    <p><strong>Prompt:</strong></p>
+                    <p>"'I loved the film!' - Positive</p>
+                    <p>'It was okay.' - Neutral</p>
+                    <p>'I really disliked the plot.' - Negative</p>
+                    <p>Now classify this: 'The acting was superb, but the story was dull.'"</p>
+                </div>
+            </div>
+        </div>
+
+        <h3>Prompt Engineering</h3>
+        <div class="info-card info">
+            <p><strong>Prompt Engineering</strong> is the iterative process of designing the best possible prompt to get the best possible results from an LLM.</p>
+            <p>A good prompt is clear, specific, and provides good examples (if using few-shot).</p>
+            
+            <div class="example-container">
+                <div class="example-title">
+                    <span>💡</span>
+                    <span>Prompt Enhancement Example (Generative Task)</span>
+                </div>
+                <div class="pros-cons-container" style="grid-template-columns: 1fr 1fr;">
+                    <div class="cons-box" style="background: #ffebee; color: #333; border: 2px solid #dc3545;">
+                        <h3 style="color: #dc3545;">Initial Prompt (Vague)</h3>
+                        <p>"Summarize the following article: [article text]."</p>
+                    </div>
+                    <div class="pros-box" style="background: #e8f5e9; color: #333; border: 2px solid #28a745;">
+                        <h3 style="color: #28a745;">Enhanced Prompt (Specific)</h3>
+                        <p>"Summarize the following article in <strong>exactly three bullet points</strong>. Include the <strong>main argument</strong>, at least <strong>two pieces of supporting evidence</strong>, and the <strong>conclusion</strong>. Be concise and clear: [article text]."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="action-btn primary" onclick="markSectionComplete('icl')">✓ Mark as Complete</button>
+            <button class="action-btn secondary" onclick="navigateToTab('evaluation')">Next: Evaluation →</button>
+        </div>
+    </div>
+    
+    <!-- ==================== SECTION 7: Evaluation ==================== -->
+    <div class="content-section" data-section="evaluation">
+        <h2>📊 LLM Evaluation</h2>
+        
+        <div class="info-card">
+            <h3>How Do We Know if an LLM is "Good"?</h3>
+            <p>We evaluate them using <strong>standard benchmarks</strong>. These are collections of questions and tasks designed to measure an LLM's capabilities in different areas.</p>
+        </div>
+
+        <div class="info-card info">
+            <h3>The Open LLM Leaderboard</h3>
+            <p>A popular place to compare models is the <a href="https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard" target="_blank">Hugging Face Open LLM Leaderboard</a>.</p>
+            <p>This leaderboard assesses public LLMs on a variety of benchmarks to get a comprehensive score. To compare your own model, you *must* follow the exact same configuration and code used by the leaderboard to ensure your results are comparable.</p>
+        </div>
+        
+        <div class="info-card warning">
+            <h3>Task-Specific Benchmarks</h3>
+            <p>If you are fine-tuning a model for a very specific task (e.g., classifying your company's support tickets), the public benchmarks might not be useful.</p>
+            <p>In this case, you must <strong>build your own benchmark</strong> (a high-quality test set of your own data) to accurately measure the model's performance on the task you actually care about.</p>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="action-btn primary" onclick="markSectionComplete('evaluation')">✓ Mark as Complete</button>
+            <button class="action-btn secondary" onclick="navigateToTab('practical')">Next: Practical Session →</button>
+        </div>
+    </div>
+
+    <!-- ==================== SECTION 8: Practical Session ==================== -->
+    <div class="content-section" data-section="practical">
+        <h2>💻 Practical Session</h2>
+        
+        <div class="info-card">
+            <h3>Hands-On Workshop</h3>
+            <p>The practical session for this week involves applying the concepts we've learned in a series of hands-on notebooks:</p>
+            <ul style="margin-top: 15px;">
+                <li>Hands-On Analysis of Large Language Models (LLMs)</li>
+                <li>Pre-Training a Large Language Model for Generating Arabic Poetry</li>
+                <li>Fine-Tuning a Large Language Model on Custom Conversational Data: Building an LLM for MASAR!</li>
+                <li>Benchmarking Our LLM: Evaluating MASAR-LLM Against the Leaderboard</li>
+                <li>Serving Our LLM with vLLM: Exploring the API to Make MASAR-LLM Accessible!</li>
+                <li>Running Inference on Our Deployed LLM with the OpenAI Client: Utilizing the MASAR-LLM API</li>
+                <li>Building Topic Classification with In-Context Learning and Guided Generation</li>
+            </ul>
+        </div>
+
+        <div class="info-card success">
+            <h3>Homework Assignment: Week 2</h3>
+            <p>Your assignment is to develop a working sentiment analysis classifier using <strong>In-context learning</strong>.</p>
+            <ul>
+                <li><strong>Model:</strong> llama 3.1 8B instruct</li>
+                <li><strong>Dataset:</strong> `stanfordnlp/imdb`</li>
+                <li><strong>API:</strong> vLLM (self-hosted) or Groq API</li>
+                <li><strong>Task:</strong>
+                    <ol>
+                        <li>Create at least 2 prompts (one zero-shot, one few-shot).</li>
+                        <li>Benchmark the `accuracy` of your prompts on the first 100 examples of the test set.</li>
+                        <li>Submit a 1-page PDF report with your prompts, their accuracy, and your design decisions.</li>
+                    </ol>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="action-btn primary" onclick="markSectionComplete('practical')">✓ Mark as Complete</button>
+            <button class="action-btn secondary" onclick="navigateToTab('glossary')">Next: Glossary →</button>
+        </div>
+    </div>
+
+    <!-- ==================== SECTION 9: GLOSSARY ==================== -->
+    <div class="content-section" data-section="glossary">
+        <h2>📖 Week 2 Glossary</h2>
+        <p>Click on any term to expand its definition and learn more!</p>
+        
+        <div class="glossary-accordion">
+            <!-- Add Week 2 terms here -->
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <span>LLM (Large Language Model)</span>
+                    <span class="icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <p>A deep learning model with a very large number of parameters (billions) that has been pre-trained on massive amounts of text data to understand and generate language.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <span>Decoder-Only Architecture</span>
+                    <span class="icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <p>A type of Transformer model (like GPT and Llama) that uses only the Decoder stack. It is "causal" or "unidirectional," meaning it can only look at past tokens to predict the next token, making it excellent for text generation.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <span>Softmax Temperature</span>
+                    <span class="icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <p>A hyperparameter used during sampling that controls the randomness of the model's output. Low temperature ($T<1$) makes output more focused and deterministic. High temperature ($T>1$) makes it more random and "creative."</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <span>KV Cache</span>
+                    <span class="icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <p>A memory cache used during inference (text generation) to store the calculated Key (K) and Value (V) vectors for all tokens in the context. This avoids re-calculating them at every step, but it consumes a large amount of VRAM.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <span>PEFT (Parameter-Efficient Fine-Tuning)</span>
+                    <span class="icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <p>A set of techniques (like LoRA) that allow fine-tuning a large model with much less memory by freezing the original model weights and training only a small number of new, additional parameters.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <span>LoRA (Low-Rank Adaptation)</span>
+                    <span class="icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <p>The most popular PEFT method. It injects small, trainable "adapter" matrices (A and B) into the frozen model, assuming the "change" from fine-tuning is low-rank (can be compressed into smaller matrices).</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <span>QLoRA (Quantized LoRA)</span>
+                    <span class="icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <p>A technique that makes LoRA even more memory-efficient by loading the large, frozen base model in a low-precision format (like 4-bit) while still training the small LoRA adapters in higher precision.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <span>Sampling (Greedy, Top-K, Top-P)</span>
+                    <span class="icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <p>Algorithms used to select the next token from the probability distribution generated by the LLM.
+                    <ul>
+                        <li><strong>Greedy:</strong> Always pick the single best.</li>
+                        <li><strong>Top-K:</strong> Randomly pick from the $K$ best.</li>
+                        <li><strong>Top-P (Nucleus):</strong> Randomly pick from the smallest set of tokens whose probabilities sum up to $P$.</li>
+                    </ul>
+                    </p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <span>ICL (In-Context Learning)</span>
+                    <span class="icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <p>The ability of an LLM to learn a new task at inference time simply by being given instructions and a few examples (zero-shot, one-shot, or few-shot) in its prompt, without any weight updates.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <span>Prompt Engineering</span>
+                    <span class="icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <p>The iterative process of designing, refining, and optimizing a prompt (the input text) to get the most accurate, relevant, and desired output from an LLM.</p>
+                </div>
+            </div>
+
+        </div>
+        
+        <div class="action-buttons">
+            <button class="action-btn primary" onclick="markSectionComplete('glossary')">✓ Mark as Complete</button>
+            <button class="action-btn secondary" onclick="navigateToTab('quiz-fill')">Ready for Quiz? →</button>
+        </div>
+    </div>
+    
+    <!-- ==================== QUIZ SECTION: FILL IN THE BLANK ==================== -->
+    <div class="content-section" data-section="quiz-fill">
+        <h2>📝 Fill in the Blank Quiz</h2>
+        <p>Test your knowledge by selecting the correct word to fill in each blank!</p>
+        
+        <div class="quiz-container" id="fillQuizContainer"></div>
+        
+        <div class="action-buttons" style="margin-top: 30px;">
+            <button class="action-btn primary" onclick="checkAllFillAnswers()">Check All Answers</button>
+            <button class="action-btn secondary" onclick="navigateToTab('quiz-tf')">Next: True/False Quiz →</button>
+        </div>
+    </div>
+    
+    <!-- ==================== QUIZ SECTION: TRUE/FALSE ==================== -->
+    <div class="content-section" data-section="quiz-tf">
+        <h2>❓ True/False Quiz</h2>
+        <p>Determine whether each statement is true or false!</p>
+        
+        <div class="quiz-container" id="tfQuizContainer"></div>
+        
+        <div class="action-buttons" style="margin-top: 30px;">
+            <button class="action-btn primary" onclick="checkAllTFAnswers()">Check All Answers</button>
+            <button class="action-btn secondary" onclick="navigateToTab('quiz-mc')">Next: Multiple Choice Quiz →</button>
+        </div>
+    </div>
+    
+    <!-- ==================== QUIZ SECTION: MULTIPLE CHOICE ==================== -->
+    <div class="content-section" data-section="quiz-mc">
+        <h2>🎲 Multiple Choice Quiz</h2>
+        <p>Choose the best answer for each question!</p>
+        
+        <div class="quiz-container" id="mcQuizContainer"></div>
+        
+        <div class="action-buttons" style="margin-top: 30px;">
+            <button class="action-btn primary" onclick="checkAllMCAnswers()">Check All Answers</button>
+            <button class="action-btn secondary" onclick="showFinalResults()">View Final Results 🏆</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ==================== GAMIFICATION DATA ====================
+let gameData = {
+    points: 0,
+    completedSections: new Set(),
+    totalSections: 8, // 7 content sections + 1 glossary
+    correctAnswers: 0,
+    totalAnswers: 0,
+    streak: 0,
+    sectionCompletion: {}
+};
+
+// ==================== QUIZ DATA (All questions based on W2_LLMs... PDF) ====================
+const fillInTheBlankQuiz = [
+    {
+        question: "Most modern LLMs like GPT and Llama use a _______ -Only architecture.",
+        options: ["Encoder", "Decoder", "Seq2Seq", "CNN"],
+        answer: "Decoder"
+    },
+    {
+        question: "To make an LLM's output more creative, you should use a _______ temperature (e.g., > 1.0).",
+        options: ["High", "Low", "Zero", "Negative"],
+        answer: "High"
+    },
+    {
+        question: "During inference, the model stores Key and Value vectors for previous tokens in the _______ to speed up generation.",
+        options: ["Optimizer", "KV Cache", "PEFT", "LoRA"],
+        answer: "KV Cache"
+    },
+    {
+        question: "Training a 7B model with an Adam optimizer in mixed precision requires memory for weights, gradients, and _______ states.",
+        options: ["Optimizer", "Cache", "Decoder", "Llama"],
+        answer: "Optimizer"
+    },
+    {
+        question: "_______ is a PEFT technique that freezes the base model and trains small 'adapter' matrices A and B.",
+        options: ["LoRA", "QLoRA", "NSP", "ICL"],
+        answer: "LoRA"
+    },
+    {
+        question: "_______ sampling picks tokens whose cumulative probability sum reaches a certain threshold $P$ (e.g., 0.9).",
+        options: ["Greedy", "Top-K", "Top-P", "Random"],
+        answer: "Top-P"
+    },
+    {
+        question: "Giving an LLM instructions and a few examples in the prompt to get it to perform a new task is called _______-shot learning.",
+        options: ["Zero", "One", "Few", "Multi"],
+        answer: "Few"
+    },
+    {
+        question: "The iterative process of designing the best possible prompt to get the best results is called _______ Engineering.",
+        options: ["Prompt", "Feature", "Software", "Model"],
+        answer: "Prompt"
+    },
+    {
+        question: "_______ combines LoRA with 4-bit quantization to fine-tune massive models on consumer GPUs.",
+        options: ["Llama", "GQA", "QLoRA", "RoPE"],
+        answer: "QLoRA"
+    },
+    {
+        question: "Llama-style architectures use _______ for normalization, which is simpler and faster than standard LayerNorm.",
+        options: ["RMSNorm", "BatchNorm", "GELU", "SwiGLU"],
+        answer: "RMSNorm"
+    }
+];
+
+const trueFalseQuiz = [
+    {
+        question: "A Decoder-Only model is 'bidirectional' and can see future tokens.",
+        answer: false
+    },
+    {
+        question: "Llama and GPT-3 use the exact same architecture, including normalization and activation functions.",
+        answer: false
+    },
+    {
+        question: "A Float 16 (FP16) data type uses 2 bytes of storage.",
+        answer: true
+    },
+    {
+        question: "Training an LLM requires significantly more VRAM than running inference with it.",
+        answer: true
+    },
+    {
+        question: "The KV Cache size is constant and does not depend on the sequence length.",
+        answer: false
+    },
+    {
+        question: "LoRA works by fine-tuning all of the original model's parameters.",
+        answer: false
+    },
+    {
+        question: "Greedy Search sampling is the most creative and non-deterministic sampling method.",
+        answer: false
+    },
+    {
+        question: "In-Context Learning (ICL) involves updating the model's weights on a new task.",
+        answer: false
+    },
+    {
+        question: "A 'zero-shot' prompt gives the model instructions but no examples.",
+        answer: true
+    },
+    {
+        question: "You must use public benchmarks like the Open LLM Leaderboard to evaluate a model for a highly specific, custom task.",
+        answer: false
+    }
+];
+
+const multipleChoiceQuiz = [
+    {
+        question: "Which of these is NOT one of the 'Three Scaling Axes' for LLMs?",
+        options: [
+            "Training Data",
+            "Model Size (Parameters)",
+            "Compute Power",
+            "Sampling Temperature"
+        ],
+        answer: "Sampling Temperature"
+    },
+    {
+        question: "You want to fine-tune a 7B model. You have 84GB of VRAM. Which method can you *not* use?",
+        options: [
+            "Full Fine-Tuning (Mixed Precision)",
+            "LoRA",
+            "QLoRA",
+            "All of the above are possible"
+        ],
+        answer: "All of the above are possible"
+    },
+    {
+        question: "What is the primary benefit of QLoRA over LoRA?",
+        options: [
+            "It trains faster.",
+            "It is more accurate.",
+            "It uses less VRAM by loading the base model in 4-bit precision.",
+            "It doesn't need a base model."
+        ],
+        answer: "It uses less VRAM by loading the base model in 4-bit precision."
+    },
+    {
+        question: "You are building a factual Q&A bot. Which Temperature and Sampling settings are best?",
+        options: [
+            "High Temperature (e.g., 1.5), Top-P (0.9)",
+            "Low Temperature (e.g., 0.1), Greedy Search",
+            "High Temperature (e.g., 1.5), Top-K (50)",
+            "Low Temperature (e.g., 0.1), Top-P (0.9)"
+        ],
+        answer: "Low Temperature (e.g., 0.1), Greedy Search"
+    },
+    {
+        question: "Which sampling method is 'dynamic,' picking a small set of tokens when certain and a large set when uncertain?",
+        options: [
+            "Greedy Search",
+            "Top-K Sampling",
+            "Top-P (Nucleus) Sampling",
+            "Random Sampling"
+        ],
+        answer: "Top-P (Nucleus) Sampling"
+    },
+    {
+        question: "What is the main difference between Pre-training and Fine-tuning?",
+        options: [
+            "Pre-training uses a small dataset, Fine-tuning uses a large one.",
+            "Pre-training starts from random weights on a huge dataset, Fine-tuning starts from pre-trained weights on a small, specific dataset.",
+            "Pre-training is for Encoders, Fine-tuning is for Decoders.",
+            "Pre-training uses LoRA, Fine-tuning does not."
+        ],
+        answer: "Pre-training starts from random weights on a huge dataset, Fine-tuning starts from pre-trained weights on a small, specific dataset."
+    },
+    {
+        question: "What is 'Controllable Generation' used for?",
+        options: [
+            "To make the model's output more creative.",
+            "To force the model's output to follow a strict format, like JSON or a specific set of words.",
+            "To speed up the model's inference time.",
+            "To pre-train the model from scratch."
+        ],
+        answer: "To force the model's output to follow a strict format, like JSON or a specific set of words."
+    },
+    {
+        question: "What would this prompt be an example of: 'Translate English to French. Example: 'hello' -> 'bonjour'. Now translate: 'goodbye''",
+        options: [
+            "Zero-Shot",
+            "One-Shot",
+            "Few-Shot",
+            "Fine-Tuning"
+        ],
+        answer: "One-Shot"
+    },
+    {
+        question: "Why do most modern LLMs (like Llama) use `RMSNorm` instead of `LayerNorm`?",
+        options: [
+            "It's more accurate.",
+            "It's simpler and computationally faster.",
+            "It works with RoPE, while LayerNorm does not.",
+            "It was invented by the Llama team."
+        ],
+        answer: "It's simpler and computationally faster."
+    },
+    {
+        question: "You need to fine-tune a 65B model on a single 24GB GPU. What is your *only* viable option?",
+        options: [
+            "Full Fine-Tuning (FP16)",
+            "LoRA (FP16)",
+            "QLoRA (4-bit)",
+            "This is impossible."
+        ],
+        answer: "QLoRA (4-bit)"
+    }
+];
+
+// ==================== NAVIGATION FUNCTIONS ====================
+function navigateToTab(tabName) {
+    const tabs = document.querySelectorAll('.tab-btn');
+    const sections = document.querySelectorAll('.content-section');
+    
+    tabs.forEach(tab => {
+        if (tab.dataset.tab === tabName) {
+            tab.classList.add('active');
+        } else {
+            tab.classList.remove('active');
+        }
+    });
+    
+    sections.forEach(section => {
+        if (section.dataset.section === tabName) {
+            section.classList.add('active');
+        } else {
+            section.classList.remove('active');
+        }
+    });
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ==================== SECTION COMPLETION ====================
+function markSectionComplete(sectionName) {
+    if (!gameData.completedSections.has(sectionName)) {
+        gameData.completedSections.add(sectionName);
+        gameData.points += 10;
+        gameData.sectionCompletion[sectionName] = true;
+        
+        // Add badge to tab
+        const tab = document.querySelector(`[data-tab="${sectionName}"]`);
+        if (tab && !tab.querySelector('.badge')) {
+            const badge = document.createElement('span');
+            badge.className = 'badge';
+            badge.textContent = '✓';
+            tab.appendChild(badge);
+        }
+        
+        updateGameStats();
+        showCompletionAnimation();
+    }
+}
+
+function updateGameStats() {
+    document.getElementById('points').textContent = gameData.points;
+    document.getElementById('completed').textContent = `${gameData.completedSections.size}/${gameData.totalSections}`;
+    
+    const accuracy = gameData.totalAnswers > 0 
+        ? Math.round((gameData.correctAnswers / gameData.totalAnswers) * 100) 
+        : 0;
+    document.getElementById('accuracy').textContent = `${accuracy}%`;
+    document.getElementById('streak').textContent = gameData.streak;
+    
+    const progress = (gameData.completedSections.size / gameData.totalSections) * 100;
+    const progressBar = document.getElementById('progressBar');
+    progressBar.style.width = `${progress}%`;
+    progressBar.textContent = `${Math.round(progress)}% Complete`;
+}
+
+function showCompletionAnimation() {
+    // Create celebration animation
+    const celebration = document.createElement('div');
+    celebration.innerHTML = '🎉';
+    celebration.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 5em;
+        z-index: 10000;
+        animation: celebrate 1s ease-out forwards;
+    `;
+    
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes celebrate {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+            100% { transform: translate(-50%, -50%) scale(1) translateY(-100px); opacity: 0; }
+        }
+    `;
+    
+    document.head.appendChild(style);
+    document.body.appendChild(celebration);
+    
+    setTimeout(() => {
+        celebration.remove();
+        style.remove();
+    }, 1000);
+}
+
+// ==================== QUIZ FUNCTIONS ====================
+function loadFillInTheBlankQuiz() {
+    const container = document.getElementById('fillQuizContainer');
+    container.innerHTML = '';
+    
+    fillInTheBlankQuiz.forEach((q, index) => {
+        const questionCard = document.createElement('div');
+        questionCard.className = 'question-card';
+        questionCard.dataset.index = index;
+        
+        const questionText = q.question.replace('_______', '<span style="color: #dc3545; font-weight: bold;">_______</span>');
+        
+        questionCard.innerHTML = `
+            <div class="question-text">${index + 1}. ${questionText}</div>
+            <div class="options-grid">
+                ${q.options.map(opt => `
+                    <button class="option-btn" onclick="selectFillOption(${index}, '${opt}', this)">${opt}</button>
+                `).join('')}
+            </div>
+            <div class="feedback-container"></div>
+        `;
+        
+        container.appendChild(questionCard);
+    });
+}
+
+function selectFillOption(questionIndex, selectedAnswer, button) {
+    const card = button.closest('.question-card');
+    card.querySelectorAll('.option-btn').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+    button.classList.add('selected');
+    card.dataset.selected = selectedAnswer;
+    
+    // Clear previous feedback
+    const feedbackContainer = card.querySelector('.feedback-container');
+    feedbackContainer.innerHTML = '';
+}
+
+function checkAllFillAnswers() {
+    let correct = 0;
+    fillInTheBlankQuiz.forEach((q, index) => {
+        const card = document.querySelector(`#fillQuizContainer .question-card[data-index="${index}"]`);
+        const selected = card.dataset.selected;
+        const feedbackContainer = card.querySelector('.feedback-container');
+        
+        if (!selected) {
+            feedbackContainer.innerHTML = '<div class="feedback incorrect">Please select an answer!</div>';
+            return;
+        }
+        
+        gameData.totalAnswers++;
+        
+        if (selected === q.answer) {
+            correct++;
+            gameData.correctAnswers++;
+            gameData.streak++;
+            gameData.points += 5;
+            feedbackContainer.innerHTML = '<div class="feedback correct">✓ Correct! Well done!</div>';
+            card.querySelectorAll('.option-btn').forEach(btn => {
+                if (btn.textContent === q.answer) {
+                    btn.classList.add('correct');
+                }
+            });
+        } else {
+            gameData.streak = 0;
+            feedbackContainer.innerHTML = `<div class="feedback incorrect">✗ Incorrect. The correct answer is: <strong>${q.answer}</strong></div>`;
+            card.querySelectorAll('.option-btn').forEach(btn => {
+                if (btn.classList.contains('selected')) {
+                    btn.classList.add('incorrect');
+                }
+                if (btn.textContent === q.answer) {
+                    btn.classList.add('correct');
+                }
+            });
+        }
+    });
+    
+    updateGameStats();
+    markSectionComplete('quiz-fill');
+}
+
+function loadTrueFalseQuiz() {
+    const container = document.getElementById('tfQuizContainer');
+    container.innerHTML = '';
+    
+    trueFalseQuiz.forEach((q, index) => {
+        const questionCard = document.createElement('div');
+        questionCard.className = 'question-card';
+        questionCard.dataset.index = index;
+        
+        questionCard.innerHTML = `
+            <div class="question-text">${index + 1}. ${q.question}</div>
+            <div class="options-grid">
+                <button class="option-btn" onclick="selectTFOption(${index}, true, this)">True</button>
+                <button class="option-btn" onclick="selectTFOption(${index}, false, this)">False</button>
+            </div>
+            <div class="feedback-container"></div>
+        `;
+        
+        container.appendChild(questionCard);
+    });
+}
+
+function selectTFOption(questionIndex, selectedAnswer, button) {
+    const card = button.closest('.question-card');
+    card.querySelectorAll('.option-btn').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+    button.classList.add('selected');
+    card.dataset.selected = selectedAnswer;
+    
+    // Clear previous feedback
+    const feedbackContainer = card.querySelector('.feedback-container');
+    feedbackContainer.innerHTML = '';
+}
+
+function checkAllTFAnswers() {
+    let correct = 0;
+    trueFalseQuiz.forEach((q, index) => {
+        const card = document.querySelector(`#tfQuizContainer .question-card[data-index="${index}"]`);
+        const selected = card.dataset.selected;
+        const feedbackContainer = card.querySelector('.feedback-container');
+        
+        if (selected === undefined) {
+            feedbackContainer.innerHTML = '<div class="feedback incorrect">Please select an answer!</div>';
+            return;
+        }
+        
+        gameData.totalAnswers++;
+        const selectedBool = selected === 'true';
+        
+        if (selectedBool === q.answer) {
+            correct++;
+            gameData.correctAnswers++;
+            gameData.streak++;
+            gameData.points += 5;
+            feedbackContainer.innerHTML = '<div class="feedback correct">✓ Correct!</div>';
+            card.querySelectorAll('.option-btn').forEach(btn => {
+                if (btn.classList.contains('selected')) {
+                    btn.classList.add('correct');
+                }
+            });
+        } else {
+            gameData.streak = 0;
+            const correctAnswer = q.answer ? 'True' : 'False';
+            feedbackContainer.innerHTML = `<div class="feedback incorrect">✗ Incorrect. The correct answer is: <strong>${correctAnswer}</strong></div>`;
+            card.querySelectorAll('.option-btn').forEach(btn => {
+                if (btn.classList.contains('selected')) {
+                    btn.classList.add('incorrect');
+                }
+                if ((btn.textContent === 'True' && q.answer) || (btn.textContent === 'False' && !q.answer)) {
+                    btn.classList.add('correct');
+                }
+            });
+        }
+    });
+    
+    updateGameStats();
+    markSectionComplete('quiz-tf');
+}
+
+function loadMultipleChoiceQuiz() {
+    const container = document.getElementById('mcQuizContainer');
+    container.innerHTML = '';
+    
+    multipleChoiceQuiz.forEach((q, index) => {
+        const questionCard = document.createElement('div');
+        questionCard.className = 'question-card';
+        questionCard.dataset.index = index;
+        
+        questionCard.innerHTML = `
+            <div class="question-text">${index + 1}. ${q.question}</div>
+            <div class="options-grid">
+                ${q.options.map(opt => `
+                    <button class="option-btn" onclick="selectMCOption(${index}, '${opt.replace(/'/g, "\\'")}', this)">${opt}</button>
+                `).join('')}
+            </div>
+            <div class="feedback-container"></div>
+        `;
+        
+        container.appendChild(questionCard);
+    });
+}
+
+function selectMCOption(questionIndex, selectedAnswer, button) {
+    const card = button.closest('.question-card');
+    card.querySelectorAll('.option-btn').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+    button.classList.add('selected');
+    card.dataset.selected = selectedAnswer;
+    
+    // Clear previous feedback
+    const feedbackContainer = card.querySelector('.feedback-container');
+    feedbackContainer.innerHTML = '';
+}
+
+function checkAllMCAnswers() {
+    let correct = 0;
+    multipleChoiceQuiz.forEach((q, index) => {
+        const card = document.querySelector(`#mcQuizContainer .question-card[data-index="${index}"]`);
+        const selected = card.dataset.selected;
+        const feedbackContainer = card.querySelector('.feedback-container');
+        
+        if (!selected) {
+            feedbackContainer.innerHTML = '<div class="feedback incorrect">Please select an answer!</div>';
+            return;
+        }
+        
+        gameData.totalAnswers++;
+        
+        if (selected === q.answer) {
+            correct++;
+            gameData.correctAnswers++;
+            gameData.streak++;
+            gameData.points += 5;
+            feedbackContainer.innerHTML = '<div class="feedback correct">✓ Excellent! That\'s correct!</div>';
+            card.querySelectorAll('.option-btn').forEach(btn => {
+                if (btn.textContent === q.answer) {
+                    btn.classList.add('correct');
+                }
+            });
+        } else {
+            gameData.streak = 0;
+            feedbackContainer.innerHTML = `<div class="feedback incorrect">✗ Incorrect. The correct answer is: <strong>${q.answer}</strong></div>`;
+            card.querySelectorAll('.option-btn').forEach(btn => {
+                if (btn.classList.contains('selected')) {
+                    btn.classList.add('incorrect');
+                }
+                if (btn.textContent === q.answer) {
+                    btn.classList.add('correct');
+                }
+            });
+        }
+    });
+    
+    updateGameStats();
+    markSectionComplete('quiz-mc');
+}
+
+function showFinalResults() {
+    const accuracy = gameData.totalAnswers > 0 
+        ? Math.round((gameData.correctAnswers / gameData.totalAnswers) * 100) 
+        : 0;
+    
+    let grade = '';
+    let message = '';
+    let emoji = '';
+    
+    if (accuracy >= 90) {
+        grade = 'A+';
+        message = 'Outstanding! You\'ve mastered LLMs!';
+        emoji = '🏆';
+    } else if (accuracy >= 80) {
+        grade = 'A';
+        message = 'Excellent work! You have a strong understanding!';
+        emoji = '🌟';
+    } else if (accuracy >= 70) {
+        grade = 'B';
+        message = 'Good job! Keep practicing to improve!';
+        emoji = '👍';
+    } else if (accuracy >= 60) {
+        grade = 'C';
+        message = 'You\'re getting there! Review the material and try again!';
+        emoji = '📚';
+    } else {
+        grade = 'D';
+        message = 'Keep studying! Go back and review the content!';
+        emoji = '💪';
+    }
+    
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+        animation: fadeIn 0.3s;
+    `;
+    
+    modal.innerHTML = `
+        <div style="background: white; padding: 40px; border-radius: 20px; text-align: center; max-width: 500px; animation: slideUp 0.3s;">
+            <div style="font-size: 5em; margin-bottom: 20px;">${emoji}</div>
+            <h2 style="color: #667eea; margin-bottom: 20px;">Final Results</h2>
+            <div style="font-size: 4em; font-weight: bold; color: #667eea; margin: 20px 0;">${grade}</div>
+            <p style="font-size: 1.2em; 
+        margin-bottom: 30px; 
+        color: #333;
+    ">${message}</p>
+            <div style="font-size: 1.1em; color: #555; margin-bottom: 30px;">
+                <p><strong>Total Points:</strong> ${gameData.points} 🏆</p>
+                <p><strong>Final Accuracy:</strong> ${accuracy}% 🎯</p>
+            </div>
+            <button 
+                class="action-btn primary" 
+                onclick="this.closest('div[style*=\'position: fixed\']').remove()"
+            >Close</button>
+        </div>
+    `;
+    
+    // Add animations and append to body
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    `;
+    
+    document.head.appendChild(style);
+    document.body.appendChild(modal);
+    
+    // Clean up style tag
+    setTimeout(() => {
+        style.remove();
+    }, 300);
+}
+
+
+// ==================== INITIALIZATION ====================
+document.addEventListener('DOMContentLoaded', () => {
+    // Setup tab navigation
+    const tabs = document.querySelectorAll('.tab-btn');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => navigateToTab(tab.dataset.tab));
+    });
+
+    // Setup glossary accordion
+    const accordionHeaders = document.querySelectorAll('.accordion-header');
+    accordionHeaders.forEach(header => {
+        header.addEventListener('click', () => {
+            const content = header.nextElementSibling;
+            header.classList.toggle('active');
+            content.classList.toggle('active');
+        });
+    });
+
+    // Load all quizzes on page load
+    loadFillInTheBlankQuiz();
+    loadTrueFalseQuiz();
+    loadMultipleChoiceQuiz();
+    
+    // Initialize the game stats display
+    updateGameStats();
+});
+</script>
+</body>
+</html>
