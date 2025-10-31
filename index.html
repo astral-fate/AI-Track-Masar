@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Updated Title for the new course content -->
+    <title>MASAR AI Course Syllabus - Transformers, LLMs, and RAG</title>
+    <style>
+        /* This is the exact same CSS from your provided index (1).html file for consistent styling */
+        html {
+            box-sizing: border-box;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 25px 40px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            color: #0056b3; /* Cairo Uni Blue */
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+        h2 {
+            color: #007bff; /* Lighter Blue */
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            margin-top: 30px;
+            font-size: 1.5em;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background-color: #e9ecef;
+            font-weight: bold;
+            color: #495057;
+        }
+        tbody tr:nth-child(odd) {
+            background-color: #f8f9fa;
+        }
+        tbody tr:hover {
+            background-color: #e2e6ea;
+        }
+        a {
+            color: #0056b3;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        /* Adjust column widths for desktop */
+        th:nth-child(1), td:nth-child(1) { width: 8%; }
+        th:nth-child(2), td:nth-child(2) { width: 25%; }
+        th:nth-child(3), td:nth-child(3) { width: 42%; }
+        th:nth-child(4), td:nth-child(4) { width: 25%; }
+
+        ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        li {
+             margin-bottom: 5px;
+        }
+        strong { 
+            color: #28a745; /* Green */
+        }
+        .course-desc {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        /* Responsive Styles */
+        @media screen and (max-width: 992px) { /* Larger tablets */
+            .container {
+                width: 90%;
+            }
+             /* Adjust column widths for tablets */
+            th:nth-child(1), td:nth-child(1) { width: 10%; }
+            th:nth-child(2), td:nth-child(2) { width: 28%; }
+            th:nth-child(3), td:nth-child(3) { width: 37%; }
+            th:nth-child(4), td:nth-child(4) { width: 25%; }
+        }
+
+        @media screen and (max-width: 768px) { /* Tablets and Mobile */
+            .container {
+                width: 95%;
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 1.6em;
+            }
+            h2 {
+                font-size: 1.3em;
+            }
+
+            table {
+                border: 0;
+            }
+
+            table thead {
+                display: none; /* Hide original table headers */
+            }
+
+            table tr {
+                display: block;
+                margin-bottom: 25px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                background-color: #fff;
+            }
+            tbody tr:nth-child(odd) { /* Reset alternating bg for stacked cards */
+                background-color: #fff;
+            }
+            tbody tr:hover { /* Subtle hover for cards */
+                background-color: #f9f9f9;
+            }
+
+            table td {
+                display: block;
+                padding: 10px 15px 10px 35%; /* Default padding, space for label */
+                position: relative;
+                border-bottom: 1px dashed #eee; /* Separator between "fields" */
+                text-align: left; /* Content aligns left */
+                width: 100% !important; /* Override inline widths from desktop */
+            }
+
+            table td:last-child {
+                border-bottom: none;
+            }
+
+            /* Card Header: First cell (Unit link) */
+            table td:first-child {
+                background-color: #e9ecef;
+                color: #0056b3;
+                font-weight: bold;
+                font-size: 1.1em;
+                padding: 12px 15px;
+                border-top-left-radius: 5px;
+                border-top-right-radius: 5px;
+                border-bottom: 1px solid #ddd;
+            }
+            table td:first-child a, table td:first-child strong a { /* Ensure link color */
+                color: #0056b3 !important;
+            }
+            table td:first-child::before { /* No label for the card header */
+                display: none;
+            }
+
+            /* Labels for other cells */
+            table td::before {
+                content: ""; /* Placeholder, set below */
+                position: absolute;
+                left: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: calc(35% - 25px); /* Label area width */
+                font-weight: bold;
+                color: #555;
+                text-align: left;
+                white-space: normal; /* Allow labels to wrap */
+                font-size: 0.9em;
+            }
+
+            /* Updated labels for the new content */
+            table td:nth-of-type(2)::before { content: "Main Topics:"; }
+            table td:nth-of-type(3)::before { content: "Key Concepts:"; }
+            table td:nth-of-type(4)::before { content: "Assignments:"; }
+
+            table td ul {
+                padding-left: 15px;
+                margin-top: 5px;
+                margin-bottom: 5px;
+            }
+             table td ul li {
+                margin-bottom: 3px;
+            }
+
+            .container > ul { /* General lists outside table */
+                padding-left: 20px;
+            }
+        }
+
+        @media screen and (max-width: 480px) { /* Smaller Mobile */
+            h1 {
+                font-size: 1.4em;
+            }
+            h2 {
+                font-size: 1.2em;
+            }
+            .container {
+                padding: 15px 10px;
+            }
+            table td { /* Adjust padding for labels on very small screens */
+                padding: 8px 10px 8px 40%;
+            }
+            table td::before { /* Adjust label width */
+                width: calc(40% - 20px);
+                font-size: 0.85em;
+            }
+            table td:first-child { /* Card header padding */
+                padding: 10px 10px;
+                font-size: 1em;
+            }
+             .course-desc {
+                font-size: 1em;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- New Title and Description based on your PDFs -->
+        <h1>MASAR AI Course Syllabus</h1>
+        <p class="course-desc">
+             A course covering Language Models, Transformers, Large Language Models (LLMs),
+             and Retrieval Augmented Generation (RAG).
+        </p>
+
+        <h2>Course Content</h2>
+        <table>
+            <thead>
+                <!-- Updated Headers for the new content -->
+                <tr>
+                    <th>Week</th>
+                    <th>Main Topics</th>
+                    <th>Key Concepts</th>
+                    <th>Assignments & Practical Work</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Content for Week 1 from W1_Transformers... and Homework...Week 1 PDFs -->
+                <tr>
+                    <td><strong><a href="W1_Transformers and LM v0.5.pdf" target="_blank">Week 1</a></strong></td>
+                    <td>
+                        - Intro to Language Models<br>
+                        - Traditional LMs (N-grams)<br>
+                        - Recurrent Neural Networks (RNNs)<br>
+                        - Introduction to Transformers<br>
+                        - Pre-training & Fine-tuning<br>
+                        - Speech Recognition (ASR)
+                    </td>
+                    <td>
+                        <ul>
+                            <li>N-gram Language Modeling</li>
+                            <li>Perplexity Evaluation</li>
+                            <li>RNNs, LSTMs, and Seq2Seq</li>
+                            <li>Vanishing/Exploding Gradients</li>
+                            <li>Seq2Seq with Attention</li>
+                            <li>Self-Attention, Q, K, V</li>
+                            <li>BERT (MLM, NSP)</li>
+                            <li>GPT (Causal LM)</li>
+                            <li>ASR, MFCC, CTC Loss, Wav2Vec</li>
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            <li><strong><a href="I am sharing _Homework Assignment - Week 1_ with you.pdf" target="_blank">Homework 1:</a></strong> Fine-tuning wav2vec 2.0 for ASR on Arabic Common Voice.</li>
+                        </ul>
+                    </td>
+                </tr>
+                 <!-- Content for Week 2 from W2_LLMs... and Homework...Week 2 PDFs -->
+                 <tr>
+                    <td><strong><a href="W2_LLMs.pptx.pdf" target="_blank">Week 2</a></strong></td>
+                    <td>
+                        - Transformers Recap<br>
+                        - Intro to Large Language Models (LLMs)<br>
+                        - Memory Analysis (Training & Inference)<br>
+                        - Parameter-Efficient Fine-Tuning (PEFT)<br>
+                        - LLM Evaluation & Serving<br>
+                        - In-Context Learning & Prompting
+                    </td>
+                    <td>
+                        <ul>
+                            <li>Decoder-Only Architecture (GPT, Llama)</li>
+                            <li>Softmax with Temperature</li>
+                            <li>Sampling: Greedy, Top-K, Top-P</li>
+                            <li>Estimating Memory Requirements</li>
+                            <li>LoRA (Low-Rank Adaptation)</li>
+                            <li>QLoRA (Quantized LoRA)</li>
+                            <li>Standard Benchmarks</li>
+                            <li>Prompt Engineering</li>
+                            <li>Zero-shot, One-shot, Few-shot Learning</li>
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            <li><strong><a href="Homework Assignment - Week 2.pdf" target="_blank">Homework 2:</a></strong> In-context learning for sentiment analysis using llama 3.1 8B.</li>
+                        </ul>
+                    </td>
+                 </tr>
+                 <!-- Content for Week 3 from W3_RAG... PDF -->
+                 <tr>
+                    <td><strong><a href="W3_RAG.pptx.pdf" target="_blank">Week 3</a></strong></td>
+                    <td>
+                        - Similarity & Distance Metrics<br>
+                        - Embedding Models<br>
+                        - Contrastive Learning<br>
+                        - Query-Document Scoring<br>
+                        - Semantic Search & Document Retrieval<br>
+                        - RAG Pipelines
+                    </td>
+                    <td>
+                        <ul>
+                            <li>Cosine Similarity vs. Dot Product</li>
+                            <li>L1 & L2 Distance</li>
+                            <li>Sentence Embedding Models</li>
+                            <li>Contrastive Learning (Triplet loss, infoNCE)</li>
+                            <li>Shared Encoder vs. Bi-Encoder</li>
+                            <li>Cross-Encoder (Reranker)</li>
+                            <li>Vector Stores</li>
+                            <li>RAG Pipeline: Retrieve, Rerank, Generate</li>
+                            <li>Reducing Hallucination with RAG</li>
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>Hands on Metrics</li>
+                            <li>Query-Document scoring hands on</li>
+                            <li>Search Engine</li>
+                            <li>Fully functional RAG pipeline</li>
+                        </ul>
+                    </td>
+                 </tr>
+            </tbody>
+        </table>
+
+        <!-- 
+            Removed the "Course Objectives" and "Grading" sections from the original HTML 
+            as this information was not present in the new course materials provided.
+        -->
+
+    </div>
+</body>
+</html>
